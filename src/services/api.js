@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://trip-backend-0bp1.onrender.com",
+  baseURL: "https://trip-backend-0bp1.onrender.com/api",
 });
 
 // Attach token automatically

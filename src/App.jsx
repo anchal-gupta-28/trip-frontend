@@ -9,6 +9,7 @@ import CreateTrip from "./pages/CreateTrip";
 import Trips from "./pages/Trips";
 import TripDetails from "./pages/TripDetails";
 import EditTrip from "./pages/EditTrip";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Navbar />
 
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
