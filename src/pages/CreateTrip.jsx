@@ -331,12 +331,12 @@ const CreateTrip = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 p-10">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 px-4 py-6 overflow-x-hidden">
             <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-10"
+                className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10"
             >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -357,7 +357,7 @@ const CreateTrip = () => {
                     </motion.span>
 
                     <div>
-                        <h2 className="text-4xl font-bold text-gray-800">
+                        <h2 className="text-2xl md:text-4xl font-bold text-gray-800">
                             Plan Your Next Adventure
                         </h2>
                     </div>
@@ -397,7 +397,7 @@ const CreateTrip = () => {
                 )}
 
                 {/* Dates */}
-                <div className="flex gap-6 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <input
                         type="date"
                         value={fromDate}
@@ -462,7 +462,7 @@ const CreateTrip = () => {
                 )}
 
                 {/* Custom Task */}
-                <div className="flex gap-4 mb-10">
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
                     <input
                         placeholder="Add custom task"
                         value={customTask}
@@ -471,7 +471,7 @@ const CreateTrip = () => {
                     />
                     <button
                         onClick={addCustomTask}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 rounded-xl transition"
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl transition"
                     >
                         Add
                     </button>
