@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
+import toast from "react-hot-toast";
 
 const EditTrip = () => {
   const { id } = useParams();
@@ -26,40 +27,32 @@ const EditTrip = () => {
       setToDate(trip.toDate.split("T")[0]);
       setTasks(trip.tasks || []);
     } catch (error) {
-      console.error("Error fetching trip:", error);
+      console.error(error);
     }
   };
 
-  // ✏️ Update task title
   const handleTaskChange = (index, value) => {
     const updated = [...tasks];
     updated[index].title = value;
     setTasks(updated);
   };
 
-  // ✅ Toggle completed
   const toggleTaskCompleted = (index) => {
     const updated = [...tasks];
     updated[index].completed = !updated[index].completed;
     setTasks(updated);
   };
 
-  // ❌ Remove task
   const removeTask = (index) => {
-    const updated = tasks.filter((_, i) => i !== index);
-    setTasks(updated);
+    setTasks(tasks.filter((_, i) => i !== index));
   };
 
-  // ➕ Add new task
   const addTask = () => {
     if (!newTask.trim()) return;
 
     setTasks([
       ...tasks,
-      {
-        title: newTask,
-        completed: false
-      }
+      { title: newTask, completed: false }
     ]);
 
     setNewTask("");
@@ -74,26 +67,35 @@ const EditTrip = () => {
         tasks
       });
 
-      alert("Trip Updated Successfully!");
+      toast.success("Trip updated successfully ✨");
       navigate("/trips");
+
     } catch (error) {
-      console.error("Update error:", error);
-      alert("Failed to update trip");
+      console.error(error);
+      toast.error("Failed to update trip");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 p-10">
-      <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
+    <div className="min-h-screen bg-slate-950 flex justify-center px-4 py-10">
 
-        <h2 className="text-3xl font-bold mb-6">Edit Trip</h2>
+      <div className="w-full max-w-2xl bg-slate-950 border border-slate-800 
+                      rounded-2xl shadow-xl p-6 md:p-8">
+
+        {/* Title */}
+        <h2 className="text-3xl font-bold text-white mb-8 text-center">
+          Edit Trip
+        </h2>
 
         {/* City */}
         <input
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
           placeholder="City"
+          className="w-full p-3 mb-4 rounded-lg bg-slate-900 text-white 
+                     border border-slate-800 
+                     focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 
+                     outline-none transition"
         />
 
         {/* Dates */}
@@ -102,28 +104,30 @@ const EditTrip = () => {
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="w-full p-3 border rounded"
+            className="w-full p-3 rounded-lg bg-slate-900 text-white border border-slate-800"
           />
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="w-full p-3 border rounded"
+            className="w-full p-3 rounded-lg bg-slate-900 text-white border border-slate-800"
           />
         </div>
 
-        {/* Tasks Section */}
-        <h3 className="font-semibold text-lg mb-3">Tasks</h3>
+        {/* Tasks */}
+        <h3 className="text-white font-semibold mb-3">Tasks</h3>
 
         {tasks.length === 0 && (
-          <p className="text-gray-500 mb-4">No tasks yet.</p>
+          <p className="text-gray-400 mb-4">No tasks yet.</p>
         )}
 
         <div className="space-y-3 mb-6">
           {tasks.map((task, index) => (
             <div
               key={task._id || index}
-              className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl"
+              className="flex items-center gap-3 
+                         bg-slate-900 border border-slate-800 
+                         p-3 rounded-lg hover:border-indigo-500/30 transition"
             >
               <input
                 type="checkbox"
@@ -137,14 +141,21 @@ const EditTrip = () => {
                 onChange={(e) =>
                   handleTaskChange(index, e.target.value)
                 }
-                className={`flex-1 p-2 border rounded ${
-                  task.completed ? "line-through text-gray-400" : ""
-                }`}
+                className={`flex-1 p-2 rounded bg-slate-800 text-white 
+                            border border-slate-700 
+                            focus:border-indigo-500 outline-none ${
+                              task.completed
+                                ? "line-through text-gray-400"
+                                : ""
+                            }`}
               />
 
               <button
                 onClick={() => removeTask(index)}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                className="px-3 py-1 rounded-md 
+                           bg-rose-500 hover:bg-rose-600 
+                           text-white text-sm 
+                           shadow-sm hover:shadow-md transition"
               >
                 Remove
               </button>
@@ -152,26 +163,35 @@ const EditTrip = () => {
           ))}
         </div>
 
-        {/* Add New Task */}
+        {/* Add Task */}
         <div className="flex gap-3 mb-6">
           <input
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             placeholder="Add new task"
-            className="flex-1 p-3 border rounded"
+            className="flex-1 p-3 rounded-lg bg-slate-900 text-white 
+                       border border-slate-800 
+                       focus:border-indigo-500 outline-none"
           />
+
           <button
             onClick={addTask}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded"
+            className="px-5 rounded-lg 
+                       bg-indigo-500 hover:bg-indigo-600 
+                       text-white shadow-md hover:shadow-lg 
+                       transition"
           >
             Add
           </button>
         </div>
 
-        {/* Update Button */}
+        {/* Update */}
         <button
           onClick={handleUpdate}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold"
+          className="w-full bg-indigo-500 hover:bg-indigo-600 
+                     text-white py-3 rounded-xl font-semibold 
+                     shadow-md hover:shadow-lg 
+                     active:scale-95 transition-all duration-200"
         >
           Update Trip
         </button>

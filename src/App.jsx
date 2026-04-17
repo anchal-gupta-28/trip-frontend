@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import { Toaster } from "react-hot-toast"; // ✅ add this
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,10 +11,24 @@ import Trips from "./pages/Trips";
 import TripDetails from "./pages/TripDetails";
 import EditTrip from "./pages/EditTrip";
 import Home from "./pages/Home";
+import Explore from "./pages/Explore"; // ✅ add this
 
 function App() {
   return (
     <Router>
+
+      {/* 🔥 Global Toast */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#1e293b", // slate-800
+            color: "#fff",
+            border: "1px solid #334155",
+          },
+        }}
+      />
+
       <Navbar />
 
       <Routes>
@@ -65,6 +80,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ✅ NEW EXPLORE ROUTE */}
+        <Route
+          path="/explore"
+          element={
+            <ProtectedRoute>
+              <Explore />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );

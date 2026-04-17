@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { motion } from "framer-motion";
 
@@ -259,237 +260,229 @@ const cityData = {
 };
 
 const CreateTrip = () => {
-    const [city, setCity] = useState("");
-    const [customCity, setCustomCity] = useState("");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
-    const [recommended, setRecommended] = useState([]);
-    const [selectedTasks, setSelectedTasks] = useState([]);
-    const [customTask, setCustomTask] = useState("");
+  const navigate = useNavigate();
 
-    const handleCityChange = (selectedCity) => {
-        setCity(selectedCity);
-        setSelectedTasks([]);
+  const [city, setCity] = useState("");
+  const [customCity, setCustomCity] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [recommended, setRecommended] = useState([]);
+  const [selectedTasks, setSelectedTasks] = useState([]);
+  const [customTask, setCustomTask] = useState("");
 
-        if (!selectedCity || selectedCity === "Other") {
-            setRecommended([]);
-            return;
-        }
+  const handleCityChange = (selectedCity) => {
+    setCity(selectedCity);
+    setSelectedTasks([]);
 
-        const all = [
-            ...cityData[selectedCity].places,
-            ...cityData[selectedCity].food
-        ];
+    if (!selectedCity || selectedCity === "Other") {
+      setRecommended([]);
+      return;
+    }
 
-        setRecommended(all);
-    };
+    const all = [
+      ...cityData[selectedCity].places,
+      ...cityData[selectedCity].food,
+    ];
 
-    const addTask = (task) => {
-        if (!selectedTasks.includes(task)) {
-            setSelectedTasks([...selectedTasks, task]);
-        }
-    };
+    setRecommended(all);
+  };
 
-    const removeTask = (task) => {
-        setSelectedTasks(selectedTasks.filter(t => t !== task));
-    };
+  const addTask = (task) => {
+    if (!selectedTasks.includes(task)) {
+      setSelectedTasks([...selectedTasks, task]);
+    }
+  };
 
-    const addCustomTask = () => {
-        if (!customTask.trim()) return;
-        setSelectedTasks([...selectedTasks, customTask]);
-        setCustomTask("");
-    };
+  const removeTask = (task) => {
+    setSelectedTasks(selectedTasks.filter((t) => t !== task));
+  };
 
-    const handleCreateTrip = async () => {
-        if (!city) return alert("Select a city");
+  const addCustomTask = () => {
+    if (!customTask.trim()) return;
+    setSelectedTasks([...selectedTasks, customTask]);
+    setCustomTask("");
+  };
 
-        if (city === "Other" && !customCity.trim()) {
-            return alert("Enter custom city name");
-        }
+  const handleCreateTrip = async () => {
+    if (!city) return alert("Select a city");
 
-        const tasks = selectedTasks.map(t => ({ title: t }));
+    if (city === "Other" && !customCity.trim()) {
+      return alert("Enter custom city name");
+    }
 
-        try {
-            await API.post("/trips", {
-                city: city === "Other" ? customCity : city,
-                fromDate,
-                toDate,
-                tasks
-            });
+    const tasks = selectedTasks.map((t) => ({ title: t }));
 
-            alert("Trip Created Successfully 🎉");
+    try {
+      await API.post("/trips", {
+        city: city === "Other" ? customCity : city,
+        fromDate,
+        toDate,
+        tasks,
+      });
 
-            setCity("");
-            setCustomCity("");
-            setFromDate("");
-            setToDate("");
-            setRecommended([]);
-            setSelectedTasks([]);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+      navigate("/trips"); // ✅ redirect after creation
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-400 via-purple-400 to-indigo-500 px-4 py-6 overflow-x-hidden">
-            <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10"
-            >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="flex items-center gap-3"
-                >
-                    <motion.span
-                        animate={{ x: [0, 10, 0] }}
-                        transition={{
-                            repeat: Infinity,
-                            duration: 3,
-                            ease: "easeInOut"
-                        }}
-                        className="text-4xl"
-                    >
-                        ✈️
-                    </motion.span>
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-                    <div>
-                        <h2 className="text-2xl md:text-4xl font-bold text-gray-800">
-                            Plan Your Next Adventure
-                        </h2>
-                    </div>
-                </motion.div>
+  return (
+    <div className="min-h-screen bg-slate-950 px-4 py-8">
 
-                {/* City Section */}
-                <div className="mb-6">
-                    <label className="font-semibold text-gray-700">
-                        🌍 Which city would you like to explore?
-                    </label>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 
+                   rounded-2xl shadow-xl p-6 md:p-10"
+      >
 
-                    <select
-                        value={city}
-                        onChange={(e) => handleCityChange(e.target.value)}
-                        className="w-full mt-2 p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">Select City</option>
-                        {Object.keys(cityData)
-                            .sort((a, b) => a.localeCompare(b))
-                            .map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
-                            ))}
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
+        {/* Header */}
+        <h2 className="text-3xl font-bold text-white mb-8">
+          Plan Your Trip ✈️
+        </h2>
 
-                {city === "Other" && (
-                    <input
-                        type="text"
-                        placeholder="Enter custom city"
-                        value={customCity}
-                        onChange={(e) => setCustomCity(e.target.value)}
-                        className="w-full p-3 border rounded-xl mb-6 focus:ring-2 focus:ring-indigo-500"
-                    />
-                )}
+        {/* City */}
+        <div className="mb-6">
+          <label className="text-gray-300 text-sm">
+            Select City
+          </label>
 
-                {/* Dates */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <input
-                        type="date"
-                        value={fromDate}
-                        onChange={(e) => setFromDate(e.target.value)}
-                        className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <input
-                        type="date"
-                        value={toDate}
-                        onChange={(e) => setToDate(e.target.value)}
-                        className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
-                    />
-                </div>
-
-                {/* Recommended Tasks */}
-                {recommended.length > 0 && (
-                    <div className="mb-10">
-                        <h3 className="font-semibold text-lg mb-4 text-gray-800">
-                            Recommended Tasks
-                        </h3>
-
-                        <div className="flex flex-wrap gap-3">
-                            {recommended.map((task, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => addTask(task)}
-                                    className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full 
-                             hover:bg-indigo-200 transition"
-                                >
-                                    + {task}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Selected Tasks */}
-                {selectedTasks.length > 0 && (
-                    <div className="mb-10">
-                        <h3 className="font-semibold text-lg mb-4 text-gray-800">
-                            Selected Tasks
-                        </h3>
-
-                        <div className="flex flex-wrap gap-3">
-                            {selectedTasks.map((task, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center gap-2 bg-green-100 
-                             text-green-800 px-4 py-2 rounded-full"
-                                >
-                                    {task}
-                                    <button
-                                        onClick={() => removeTask(task)}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Custom Task */}
-                <div className="flex flex-col sm:flex-row gap-3 mb-8">
-                    <input
-                        placeholder="Add custom task"
-                        value={customTask}
-                        onChange={(e) => setCustomTask(e.target.value)}
-                        className="flex-1 p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <button
-                        onClick={addCustomTask}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl transition"
-                    >
-                        Add
-                    </button>
-                </div>
-
-                {/* Submit */}
-                <button
-                    onClick={handleCreateTrip}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 
-                     text-white py-3 rounded-2xl text-lg font-semibold 
-                     shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                    Create Trip
-                </button>
-
-            </motion.div>
+          <select
+            value={city}
+            onChange={(e) => handleCityChange(e.target.value)}
+            className="w-full mt-2 p-3 rounded-lg bg-slate-800 text-white 
+                       border border-slate-700 focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Select City</option>
+            {Object.keys(cityData)
+              .sort((a, b) => a.localeCompare(b))
+              .map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            <option value="Other">Other</option>
+          </select>
         </div>
-    );
+
+        {/* Custom City */}
+        {city === "Other" && (
+          <input
+            type="text"
+            placeholder="Enter custom city"
+            value={customCity}
+            onChange={(e) => setCustomCity(e.target.value)}
+            className="w-full p-3 mb-6 rounded-lg bg-slate-800 text-white 
+                       border border-slate-700 focus:ring-2 focus:ring-indigo-500"
+          />
+        )}
+
+        {/* Dates */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="w-full p-3 rounded-lg bg-slate-800 text-white border border-slate-700"
+          />
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="w-full p-3 rounded-lg bg-slate-800 text-white border border-slate-700"
+          />
+        </div>
+
+        {/* Recommended Tasks */}
+        {recommended.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-white mb-3 font-semibold">
+              Recommended Tasks
+            </h3>
+
+            <div className="flex flex-wrap gap-2">
+              {recommended.map((task, index) => {
+                const isSelected = selectedTasks.includes(task);
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      isSelected ? removeTask(task) : addTask(task)
+                    }
+                    className={`px-3 py-1.5 text-sm rounded-full border transition
+                      ${
+                        isSelected
+                          ? "bg-indigo-500 text-white border-indigo-500"
+                          : "bg-slate-800 text-gray-300 border-slate-700 hover:bg-slate-700"
+                      }`}
+                  >
+                    {task}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Selected Tasks */}
+        {selectedTasks.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-white mb-3 font-semibold">
+              Selected Tasks
+            </h3>
+
+            <div className="flex flex-wrap gap-2">
+              {selectedTasks.map((task, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full 
+                             bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                >
+                  {task}
+                  <button
+                    onClick={() => removeTask(task)}
+                    className="text-rose-400 hover:text-rose-500"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Custom Task */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <input
+            placeholder="Add custom task"
+            value={customTask}
+            onChange={(e) => setCustomTask(e.target.value)}
+            className="flex-1 p-3 rounded-lg bg-slate-800 text-white 
+                       border border-slate-700 focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            onClick={addCustomTask}
+            className="px-6 py-3 rounded-lg bg-indigo-500 hover:bg-indigo-600 
+                       text-white transition"
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Submit */}
+        <button
+          onClick={handleCreateTrip}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 
+                     text-white py-3 rounded-xl font-semibold transition"
+        >
+          Create Trip
+        </button>
+
+      </motion.div>
+    </div>
+  );
 };
 
 export default CreateTrip;
